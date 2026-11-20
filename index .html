@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RoleMatch TH</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--pri:#4f46e5;--pri2:#eef2ff;--ok:#059669;--ok2:#ecfdf5;--bad:#e11d48;--bad2:#fff1f2;--chip:#f1f5f9;--dark:#0f172a;--darkt:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020;--card:#151b2e;--ink:#e8ecf6;--mut:#94a3b8;--line:#263049;--pri:#818cf8;--pri2:#1e2347;--ok:#34d399;--ok2:#0f2a22;--bad:#fb7185;--bad2:#2e1520;--chip:#1e2638;--dark:#e8ecf6;--darkt:#0f172a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1020;--card:#151b2e;--ink:#e8ecf6;--mut:#94a3b8;--line:#263049;--pri:#818cf8;--pri2:#1e2347;--ok:#34d399;--ok2:#0f2a22;--bad:#fb7185;--bad2:#2e1520;--chip:#1e2638;--dark:#e8ecf6;--darkt:#0f172a;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Noto Sans Thai",system-ui,sans-serif}
+.w{max-width:760px;margin:0 auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.hd{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:20px}
+h1{font-size:18px;margin:0}h1 b{color:var(--pri)}h2{font-size:19px;margin:0 0 4px}h3{font-size:16px;margin:0}
+.sub{color:var(--mut);font-size:12.5px}
+.tabs{display:flex;gap:6px;background:var(--chip);padding:5px;border-radius:14px;margin:12px 0;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.tabs button{flex:1;border:0;background:none;color:var(--mut);padding:9px 4px;border-radius:10px;font:inherit;font-weight:500;cursor:pointer}
+.tabs button.on{background:var(--card);color:var(--pri);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;border-radius:12px;font-weight:500}
+.btn.p{background:var(--pri);color:#fff;border-color:var(--pri)}.btn.g{background:var(--ok);color:#fff;border-color:var(--ok)}.btn.d{background:var(--dark);color:var(--darkt);border-color:var(--dark)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-block;background:var(--chip);color:var(--ink);border-radius:8px;padding:3px 9px;font-size:12.5px;border:1px solid var(--line)}
+.chip.on{background:var(--pri2);color:var(--pri);border-color:var(--pri)}
+.bd{display:inline-block;border-radius:8px;padding:2px 9px;font-size:12.5px;background:var(--pri2);color:var(--pri)}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.av{width:38px;height:38px;border-radius:12px;background:var(--pri2);color:var(--pri);display:grid;place-items:center;font-weight:700;flex:none}
+.ic{border:0;background:none;color:var(--mut);padding:4px 7px;font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.st{border-radius:14px;padding:12px;background:var(--chip)}.st small{color:var(--mut);display:block;font-size:12px}.st b{font-size:26px}
+.mem{display:flex;gap:10px;align-items:flex-start;border:2px solid transparent;border-radius:12px;padding:8px;width:100%;text-align:left;background:var(--chip);color:var(--ink);margin-top:8px}
+.mem.sel{border-color:var(--pri);background:var(--pri2)}
+.slot{border:2px dashed var(--line);background:none;color:var(--mut);border-radius:12px;padding:12px;width:100%;margin-top:8px}
+.sc{margin-left:auto;font-weight:700;border-radius:8px;padding:1px 8px;font-size:13px;flex:none}
+.hi{background:var(--ok2);color:var(--ok)}.mid{background:var(--pri2);color:var(--pri)}.lo{background:var(--bad2);color:var(--bad)}
+.ov{position:fixed;inset:0;background:rgba(2,6,23,.55);display:grid;place-items:center;padding:12px;z-index:20}
+.dl{background:var(--card);color:var(--ink);border-radius:18px;padding:18px;width:100%;max-width:460px;max-height:90vh;overflow:auto}
+label{display:block;font-weight:500;margin:12px 0 4px;font-size:13.5px}
+input[type=text],input[type=number],select{width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+.lv button{border:1px solid var(--line);background:var(--card);color:var(--ink);width:28px;height:28px;border-radius:8px}
+.lv button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.cl{max-height:120px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.cl label{display:flex;gap:8px;margin:4px 0;font-weight:400}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ok);color:#fff;padding:9px 16px;border-radius:12px;z-index:30}
+.tw{overflow-x:auto}
+</style></head><body>
+<div class="w">
+<div class="card hd" style="margin-bottom:0"><div class="row" style="flex-wrap:nowrap"><div class="logo">👥</div><div><h1>RoleMatch <b>TH</b></h1><div class="sub">ระบบจัดหน้าที่และวิเคราะห์ความเข้ากันได้ในกลุ่ม</div></div></div><button class="btn" data-a="sample">✨ ข้อมูลตัวอย่าง</button></div>
+<div class="tabs" id="tabs"></div>
+<div id="main"></div>
+</div>
+<div id="dlg"></div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const SK=["เขียนโค้ด","ออกแบบ/กราฟิก","พรีเซนต์/พูดเก่ง","จัดการเอกสาร","หาข้อมูล/วิจัย","วางแผน/บริหาร","ตัดต่อวิดีโอ","ประสานงาน","คิดไอเดีย/เขียนบท"];
+const ST={lead:"👑 ผู้นำ",do:"⚡ สายลุย/ปฏิบัติ",sup:"🤝 สายซัพพอร์ต/ประสานงาน",cre:"🎨 สายครีเอทีฟ",plan:"🗓️ สายวางแผน"};
+const TM={early:"ทำล่วงหน้า",late:"ใกล้เดดไลน์"};
+const MD={solo:"ชอบลุยเดี่ยว",pair:"ชอบทำงานเป็นคู่",team:"ทำเป็นทีมได้"};
+const TPL=[
+["📚 โปรเจกต์กลุ่ม / ทำรายงาน",[["หัวหน้าทีม",1,"lead",["วางแผน/บริหาร","ประสานงาน"]],["ฝ่ายข้อมูล & รายงาน",2,"plan",["หาข้อมูล/วิจัย","จัดการเอกสาร"]],["ฝ่ายออกแบบสไลด์ & สื่อ",2,"cre",["ออกแบบ/กราฟิก","ตัดต่อวิดีโอ"]],["ฝ่ายนำเสนอ",1,"sup",["พรีเซนต์/พูดเก่ง","คิดไอเดีย/เขียนบท"]]]],
+["🎮 พัฒนาเกม / ซอฟต์แวร์",[["โปรแกรมเมอร์",2,"do",["เขียนโค้ด"]],["ดีไซเนอร์",1,"cre",["ออกแบบ/กราฟิก","คิดไอเดีย/เขียนบท"]],["ผู้จัดการโปรเจกต์",1,"lead",["วางแผน/บริหาร","ประสานงาน"]]]],
+["🎪 จัดงานอีเวนต์ / กิจกรรม",[["ประธานงาน",1,"lead",["วางแผน/บริหาร"]],["ฝ่ายประสานงาน",2,"sup",["ประสานงาน","จัดการเอกสาร"]],["ฝ่ายประชาสัมพันธ์",2,"cre",["ออกแบบ/กราฟิก","ตัดต่อวิดีโอ"]],["พิธีกร",1,"sup",["พรีเซนต์/พูดเก่ง"]]]]];
+const MEM=[
+["นนท์","lead","early","team",{"วางแผน/บริหาร":5,"พรีเซนต์/พูดเก่ง":4,"ประสานงาน":4},["มายด์"],["เจ"]],
+["มายด์","sup","early","pair",{"จัดการเอกสาร":5,"หาข้อมูล/วิจัย":4,"ประสานงาน":3},["นนท์"],[]],
+["บีม","cre","late","solo",{"ออกแบบ/กราฟิก":5,"ตัดต่อวิดีโอ":4,"คิดไอเดีย/เขียนบท":3},["แพรว"],[]],
+["เจ","do","late","solo",{"เขียนโค้ด":5,"หาข้อมูล/วิจัย":4},["ต้น"],["นนท์"]],
+["แพรว","sup","early","pair",{"จัดการเอกสาร":3,"ประสานงาน":5,"พรีเซนต์/พูดเก่ง":5},["บีม"],[]],
+["ต้น","plan","early","team",{"หาข้อมูล/วิจัย":5,"วางแผน/บริหาร":3,"จัดการเอกสาร":4},["เจ"],[]],
+["ฟ้า","cre","late","pair",{"ออกแบบ/กราฟิก":4,"ตัดต่อวิดีโอ":5,"คิดไอเดีย/เขียนบท":4},["บีม"],[]]];
+const uid=()=>Math.random().toString(36).slice(2,8);
+let S={tab:0,members:[],roles:[],custom:[],A:null,sel:null},D=null;
+
+function loadSample(){
+  const ids={};S.members=MEM.map(m=>{const id=uid();ids[m[0]]=id;return{id,name:m[0],style:m[1],time:m[2],mode:m[3],skills:m[4],like:m[5],avoid:m[6]}});
+  S.members.forEach(m=>{m.like=m.like.map(n=>ids[n]);m.avoid=m.avoid.map(n=>ids[n])});
+  applyTpl(0);
+}
+function applyTpl(i){S.roles=TPL[i][1].map(r=>({id:uid(),name:r[0],count:r[1],style:r[2],skills:r[3].slice()}));S.A=null;S.sel=null}
+const slots=()=>S.roles.flatMap(r=>Array(r.count).fill(r.id));
+const byId=()=>Object.fromEntries(S.members.map(m=>[m.id,m]));
+const allSk=()=>[...SK,...S.custom];
+
+/* ---------- Matching logic ---------- */
+function fit(m,r){
+  const sk=r.skills.length?r.skills.reduce((a,s)=>a+(m.skills[s]||0),0)/(5*r.skills.length):.5;
+  const st=!r.style||r.style===m.style?1:.4;
+  const md=(m.mode==="solo"&&r.count===1)||(m.mode==="pair"&&r.count===2)||m.mode==="team"?.05:0;
+  return Math.min(1,.78*sk+.17*st+md);
+}
+const likes=(a,b)=>a.like.includes(b.id)||b.like.includes(a.id);
+const avoids=(a,b)=>a.avoid.includes(b.id)||b.avoid.includes(a.id);
+function pairVal(a,b){return(likes(a,b)?4:0)-(avoids(a,b)?12:0)-(a.time!==b.time?1.5:0)}
+function obj(A,sl,M,R){
+  let t=0;const g={};
+  sl.forEach((rid,p)=>{const id=A[p];if(!id){t-=10;return}t+=fit(M[id],R[rid])*10;(g[rid]=g[rid]||[]).push(M[id])});
+  for(const k in g){const l=g[k];for(let i=0;i<l.length;i++)for(let j=i+1;j<l.length;j++)t+=pairVal(l[i],l[j])}
+  return t;
+}
+function solve(tries){
+  const sl=slots(),M=byId(),R=Object.fromEntries(S.roles.map(r=>[r.id,r])),P=sl.length+S.members.length;
+  let best=null,bo=-1e9;
+  for(let k=0;k<tries;k++){
+    const A=S.members.map(m=>m.id);while(A.length<P)A.push(null);
+    for(let i=P-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[A[i],A[j]]=[A[j],A[i]]}
+    let cur=obj(A,sl,M,R),imp=true;
+    while(imp){imp=false;
+      for(let p=0;p<P;p++)for(let q=p+1;q<P;q++){
+        if(A[p]===A[q])continue;
+        [A[p],A[q]]=[A[q],A[p]];const o=obj(A,sl,M,R);
+        if(o>cur+1e-9){cur=o;imp=true}else[A[p],A[q]]=[A[q],A[p]];
+      }}
+    if(cur>bo){bo=cur;best=A.slice()}
+  }
+  return best;
+}
+function evalA(){
+  const sl=slots(),M=byId();let sum=0,n=0,syn=0,con=0,filled=0;
+  const res=S.roles.map(r=>{
+    const ps=[];sl.forEach((rid,p)=>{if(rid===r.id)ps.push(p)});
+    const mates=ps.map(p=>S.A[p]).filter(Boolean).map(id=>M[id]);
+    const items=ps.map(p=>{
+      const m=S.A[p]?M[S.A[p]]:null;if(!m)return{p};
+      const others=mates.filter(o=>o!==m),lk=others.filter(o=>likes(m,o)),av=others.filter(o=>avoids(m,o));
+      const f=fit(m,r),score=Math.max(0,Math.min(100,Math.round(f*100+lk.length*6-av.length*20)));
+      sum+=score;n++;filled++;
+      const strong=r.skills.filter(s=>(m.skills[s]||0)>=4);
+      let why=strong.length?"ถนัด "+strong.join(", "):(r.skills.length?"ทักษะตรงกับหน้าที่ยังไม่สูง":"หน้าที่ทั่วไป");
+      if(r.style&&r.style===m.style)why+=" · สไตล์ตรงกับหน้าที่";
+      if(lk.length)why+=" · เข้ากับ "+lk.map(o=>o.name).join(", ");
+      return{p,m,score,why,warn:av.map(o=>o.name)};
+    });
+    for(let i=0;i<mates.length;i++)for(let j=i+1;j<mates.length;j++){if(likes(mates[i],mates[j]))syn++;if(avoids(mates[i],mates[j]))con++}
+    return{r,items};
+  });
+  const pool=[];for(let p=sl.length;p<S.A.length;p++)if(S.A[p])pool.push({p,m:M[S.A[p]]});
+  return{res,pool,avg:n?Math.round(sum/n):0,syn,con,filled,total:sl.length};
+}
+
+/* ---------- Render ---------- */
+function chips(list){return list.map(s=>`<span class="chip">${esc(s)}</span>`).join(" ")}
+function render(){
+  const tb=["สมาชิก ("+S.members.length+")","หน้าที่ ("+S.roles.length+")","ผลลัพธ์ & สลับทีม"];
+  $("#tabs").innerHTML=tb.map((t,i)=>`<button class="${S.tab===i?"on":""}" data-a="tab:${i}">${i+1} ${t}</button>`).join("");
+  $("#main").innerHTML=[vMem,vRole,vRes][S.tab]();
+  $("#dlg").innerHTML=D?vDlg():"";
+}
+function vMem(){
+  const M=byId(),nm=ids=>ids.map(i=>M[i]&&M[i].name).filter(Boolean).join(", ")||"-";
+  return `<div class="card"><h2>ขั้นตอนที่ 1: จัดการข้อมูลสมาชิก</h2><div class="sub">ระบุสไตล์ ความถนัด (ระดับ 1-5) และความสัมพันธ์ ใครเข้ากันได้ดี / ใครควรเลี่ยงอยู่ด้วยกัน</div><div class="row" style="margin-top:12px"><button class="btn p" data-a="addM">＋ เพิ่มสมาชิกใหม่</button><button class="btn d" data-a="tab:1">ถัดไป: ตั้งค่าหน้าที่</button></div></div>`+
+  (S.members.length?S.members.map(m=>`<div class="card"><div class="row" style="flex-wrap:nowrap"><div class="av">${esc(m.name[0])}</div><div style="flex:1"><h3>${esc(m.name)}</h3><span class="bd">${ST[m.style]}</span> <span class="chip">${TM[m.time]}</span> <span class="chip">${MD[m.mode]}</span></div><button class="ic" data-a="editM:${m.id}">✏️ แก้ไข</button><button class="ic" data-a="delM:${m.id}">🗑</button></div>
+  <div class="sub" style="margin-top:10px">ทักษะ / ความถนัด</div><div class="row" style="gap:5px;margin-top:4px">${Object.keys(m.skills).length?Object.entries(m.skills).map(([s,l])=>`<span class="chip">${esc(s)} · ${l}/5</span>`).join(""):'<span class="sub">ยังไม่ได้เลือก</span>'}</div>
+  <div style="margin-top:10px;font-size:13.5px"><div class="ok">💚 เข้ากันดี: ${esc(nm(m.like))}</div><div class="bad">⚠️ เลี่ยงคู่กับ: ${esc(nm(m.avoid))}</div></div></div>`).join(""):`<div class="card sub">ยังไม่มีสมาชิก กด "เพิ่มสมาชิกใหม่" หรือ "ข้อมูลตัวอย่าง" เพื่อเริ่มต้น</div>`);
+}
+function vRole(){
+  const need=slots().length,warn=S.members.length!==need;
+  return `<div class="card"><h2>ขั้นตอนที่ 2: กำหนดหน้าที่และตำแหน่งที่ต้องการ</h2><div class="sub">กำหนดจำนวนคน ทักษะที่จำเป็น และสไตล์การทำงานที่เหมาะสมกับแต่ละตำแหน่ง</div><div class="row" style="margin-top:12px"><button class="btn" data-a="addR">＋ เพิ่มหน้าที่ใหม่</button><button class="btn g" data-a="auto">🪄 จับคู่อัตโนมัติเลย!</button></div></div>
+  <div class="card" style="background:var(--pri2)"><div style="font-weight:500;margin-bottom:8px">เทมเพลตหน้าที่สำเร็จรูป (แทนที่รายการปัจจุบัน):</div><div class="row">${TPL.map((t,i)=>`<button class="btn" data-a="tpl:${i}">${t[0]}</button>`).join("")}</div></div>
+  ${warn?`<div class="card bad" style="background:var(--bad2)">มีสมาชิก ${S.members.length} คน แต่ต้องการ ${need} ตำแหน่ง ${S.members.length>need?"คนที่เหลือจะอยู่ในกลุ่มรอจัด":"บางตำแหน่งจะว่าง"} ปรับจำนวนคนในหน้าที่ได้</div>`:""}
+  ${S.roles.map(r=>`<div class="card"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h3>${esc(r.name)} <span class="bd">ต้องการ ${r.count} คน</span></h3><span style="white-space:nowrap"><button class="ic" data-a="editR:${r.id}">✏️</button><button class="ic" data-a="delR:${r.id}">🗑</button></span></div>${r.style?`<div style="margin-top:6px"><span class="bd ok" style="background:var(--ok2)">เหมาะกับ: ${ST[r.style]}</span></div>`:""}<div class="sub" style="margin-top:8px">ทักษะที่จำเป็น:</div><div class="row" style="gap:5px;margin-top:4px">${chips(r.skills)||'<span class="sub">ไม่ระบุ</span>'}</div></div>`).join("")}`;
+}
+const scc=v=>v>=80?"hi":v>=55?"mid":"lo";
+function mrow(it){
+  return `<button class="mem ${S.sel===it.p?"sel":""}" data-a="pick:${it.p}"><div class="av" style="width:34px;height:34px">${esc(it.m.name[0])}</div><div style="flex:1"><b>${esc(it.m.name)}</b><div class="sub">${esc(it.why||"")}</div>${it.warn&&it.warn.length?`<div class="bad" style="font-size:12.5px">⚠️ เสี่ยงขัดแย้งกับ ${esc(it.warn.join(", "))}</div>`:""}</div>${it.score!=null?`<span class="sc ${scc(it.score)}">${it.score}%</span>`:""}</button>`;
+}
+function vRes(){
+  if(!S.A)return `<div class="card" style="text-align:center"><h2>ยังไม่มีผลลัพธ์</h2><div class="sub">กดปุ่มด้านล่างเพื่อให้ระบบจัดคนลงหน้าที่ตามทักษะและความเข้ากันได้</div><button class="btn g" style="margin-top:12px" data-a="auto">🪄 จับคู่อัตโนมัติเลย!</button></div>`;
+  const E=evalA(),M=byId();
+  const hint=S.sel!=null?`<div class="card" style="background:var(--pri2);color:var(--pri)">เลือก <b>${esc(M[S.A[S.sel]].name)}</b> แล้ว แตะคนอื่นเพื่อสลับ หรือแตะช่องว่างเพื่อย้าย <button class="ic" data-a="pick:${S.sel}">ยกเลิก</button></div>`:"";
+  return `<div class="card"><div class="row" style="justify-content:space-between"><h2>ผลลัพธ์การจัดหน้าที่ & กระดานสลับตำแหน่ง</h2><span class="bd ok" style="background:var(--ok2)">Interactive</span></div><div class="sub">คลิกเลือกสมาชิก 2 คนเพื่อสลับตำแหน่งกัน หรือย้ายคนไปยังตำแหน่งที่ว่างได้ทันที</div>
+  <div class="row" style="margin:12px 0"><button class="btn" style="color:var(--pri)" data-a="again">🔄 คำนวณใหม่ (สุ่มทางเลือกอื่น)</button><button class="btn d" data-a="copy">📋 คัดลอกสรุปส่งเข้าแชทกลุ่ม</button></div>
+  <div class="grid"><div class="st"><small>ความเหมาะสมเฉลี่ยทั้งทีม</small><b style="color:var(--pri)">${E.avg}%</b></div><div class="st"><small>จัดลงตำแหน่งแล้ว</small><b>${E.filled} / ${E.total}</b></div><div class="st" style="background:var(--ok2)"><small>คู่เข้ากันได้ดี (Synergy)</small><b class="ok">${E.syn} คู่</b></div><div class="st" style="background:var(--bad2)"><small>จุดเสี่ยงขัดแย้ง (Conflict)</small><b class="bad">${E.con} จุด</b></div></div></div>${hint}
+  ${E.res.map(x=>`<div class="card"><h3>${esc(x.r.name)} <span class="sub">(${x.items.filter(i=>i.m).length}/${x.r.count} คน)</span></h3>${x.items.map(it=>it.m?mrow(it):`<button class="slot" data-a="pick:${it.p}">ว่าง — แตะเพื่อย้ายคนมาที่นี่</button>`).join("")}</div>`).join("")}
+  ${E.pool.length||S.sel!=null?`<div class="card"><h3>ยังไม่ได้ลงตำแหน่ง</h3>${E.pool.map(it=>mrow({p:it.p,m:it.m,why:"สำรอง / รอจัดลงตำแหน่ง"})).join("")}${S.sel!=null&&S.sel<slots().length?`<button class="slot" data-a="toPool">ย้ายมาพักที่นี่</button>`:""}</div>`:""}`;
+}
+function vDlg(){
+  const f=D.f,isM=D.t==="m",M=S.members.filter(m=>m.id!==D.id);
+  const sk=allSk().map(s=>{const on=isM?s in f.skills:f.skills.includes(s);return `<button class="chip ${on?"on":""}" data-a="sk:${esc(s)}">${on?"✓ ":"＋ "}${esc(s)}</button>`}).join(" ");
+  const lvs=isM?Object.keys(f.skills).map(s=>`<div class="row lv" style="margin-top:6px;justify-content:space-between"><span style="font-size:13px">${esc(s)}</span><span>${[1,2,3,4,5].map(n=>`<button class="${f.skills[s]===n?"on":""}" data-a="lv:${esc(s)}:${n}">${n}</button>`).join(" ")}</span></div>`).join(""):"";
+  const opts=o=>Object.entries(o).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+  const sel=(field,o,none)=>`<select data-f="${field}">${none?`<option value="">${none}</option>`:""}${opts(o).replace(`value="${f[field]}"`,`value="${f[field]}" selected`)}</select>`;
+  return `<div class="ov"><div class="dl"><div class="row" style="justify-content:space-between"><h2>${isM?(D.id?"แก้ไขสมาชิก":"เพิ่มสมาชิกใหม่"):(D.id?"แก้ไขหน้าที่":"เพิ่มหน้าที่ใหม่")}</h2><button class="ic" data-a="cancel">✕</button></div>
+  <label>${isM?"ชื่อสมาชิก":"ชื่อหน้าที่ / ตำแหน่ง"} *</label><input type="text" data-f="name" value="${esc(f.name)}" placeholder="${isM?"เช่น นนท์":"เช่น หัวหน้าทีม, ฝ่ายออกแบบ"}">${D.err?`<div class="bad sub">${D.err}</div>`:""}
+  ${isM?"":`<label>จำนวนคน *</label><input type="number" min="1" max="20" data-f="count" value="${f.count}">`}
+  <label>${isM?"สไตล์การทำงาน / บุคลิกภาพ":"สไตล์การทำงานที่เหมาะกับหน้าที่นี้"}</label>${sel("style",ST,isM?"":"ไม่ระบุ")}
+  ${isM?`<label>ช่วงเวลาทำงาน</label>${sel("time",TM)}<label>รูปแบบการทำงาน</label>${sel("mode",MD)}`:""}
+  <label>${isM?"ทักษะ / ความถนัด (เลือกได้หลายข้อ แล้วให้ระดับ 1-5)":"ทักษะที่ต้องการสำหรับตำแหน่งนี้"}</label><div class="row" style="gap:5px">${sk}</div>${lvs}
+  <div class="row" style="margin-top:8px;flex-wrap:nowrap"><input type="text" data-f="newsk" value="${esc(f.newsk)}" placeholder="เพิ่มทักษะอื่นๆ"><button class="btn" data-a="addSk">＋ เพิ่ม</button></div>
+  ${isM?`<label class="ok">💚 เข้ากันได้ดีกับ (Synergy)</label><div class="cl">${M.map(o=>`<label><input type="checkbox" data-c="like:${o.id}" ${f.like.includes(o.id)?"checked":""}>${esc(o.name)}</label>`).join("")||'<span class="sub">ยังไม่มีสมาชิกคนอื่น</span>'}</div><label class="bad">⚠️ เลี่ยงทำงานคู่กับ (Conflict)</label><div class="cl">${M.map(o=>`<label><input type="checkbox" data-c="avoid:${o.id}" ${f.avoid.includes(o.id)?"checked":""}>${esc(o.name)}</label>`).join("")||'<span class="sub">ยังไม่มีสมาชิกคนอื่น</span>'}</div>`:""}
+  <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn" data-a="cancel">ยกเลิก</button><button class="btn p" data-a="save">${isM?"บันทึกสมาชิก":"บันทึกหน้าที่"}</button></div></div></div>`;
+}
+
+/* ---------- Actions ---------- */
+function toast(t){const e=$("#toast");e.innerHTML=`<div class="toast">${esc(t)}</div>`;setTimeout(()=>e.innerHTML="",2200)}
+function run(tries){if(!S.members.length||!S.roles.length){toast("เพิ่มสมาชิกและหน้าที่ก่อน");return}S.A=solve(tries);S.sel=null;S.tab=2;render();toast("จับคู่หน้าที่อัตโนมัติเรียบร้อยแล้ว!")}
+function summary(){
+  const E=evalA();
+  return "📋 สรุปการจัดหน้าที่ (เหมาะสมเฉลี่ย "+E.avg+"%)\n"+E.res.map(x=>"• "+x.r.name+": "+(x.items.filter(i=>i.m).map(i=>i.m.name+" ("+i.score+"%)").join(", ")||"ว่าง")).join("\n")+(E.pool.length?"\n• สำรอง: "+E.pool.map(i=>i.m.name).join(", "):"");
+}
+function copyText(t){
+  try{navigator.clipboard.writeText(t).then(()=>toast("คัดลอกแล้ว"),()=>fb(t))}catch(e){fb(t)}
+  function fb(t){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast("คัดลอกแล้ว")}catch(e){toast("คัดลอกไม่สำเร็จ")}a.remove()}
+}
+function openM(id){const m=S.members.find(x=>x.id===id);D={t:"m",id,f:m?{name:m.name,style:m.style,time:m.time,mode:m.mode,skills:{...m.skills},like:m.like.slice(),avoid:m.avoid.slice(),newsk:""}:{name:"",style:"lead",time:"early",mode:"team",skills:{},like:[],avoid:[],newsk:""}};render()}
+function openR(id){const r=S.roles.find(x=>x.id===id);D={t:"r",id,f:r?{name:r.name,count:r.count,style:r.style,skills:r.skills.slice(),newsk:""}:{name:"",count:1,style:"",skills:[],newsk:""}};render()}
+function save(){
+  const f=D.f,name=f.name.trim();
+  if(!name){D.err="กรุณากรอกชื่อ";render();return}
+  if(D.t==="m"){
+    const o={name,style:f.style,time:f.time,mode:f.mode,skills:f.skills,like:f.like,avoid:f.avoid};
+    if(D.id)Object.assign(S.members.find(x=>x.id===D.id),o);else S.members.push({id:uid(),...o});
+  }else{
+    const o={name,count:Math.max(1,Math.min(20,parseInt(f.count)||1)),style:f.style,skills:f.skills};
+    if(D.id)Object.assign(S.roles.find(x=>x.id===D.id),o);else S.roles.push({id:uid(),...o});
+  }
+  D=null;S.A=null;S.sel=null;render();
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-a]");if(!b)return;
+  const [a,...r]=b.dataset.a.split(":"),v=r.join(":");
+  if(a==="tab"){S.tab=+v}
+  else if(a==="sample"){loadSample();S.tab=0;toast("โหลดข้อมูลตัวอย่างแล้ว")}
+  else if(a==="addM")return openM();
+  else if(a==="editM")return openM(v);
+  else if(a==="delM"){S.members=S.members.filter(m=>m.id!==v);S.members.forEach(m=>{m.like=m.like.filter(i=>i!==v);m.avoid=m.avoid.filter(i=>i!==v)});S.A=null}
+  else if(a==="addR")return openR();
+  else if(a==="editR")return openR(v);
+  else if(a==="delR"){S.roles=S.roles.filter(x=>x.id!==v);S.A=null}
+  else if(a==="tpl"){applyTpl(+v)}
+  else if(a==="auto")return run(40);
+  else if(a==="again")return run(2);
+  else if(a==="copy")return copyText(summary());
+  else if(a==="pick"){const p=+v;if(S.sel==null){if(S.A[p])S.sel=p}else if(S.sel===p)S.sel=null;else{[S.A[S.sel],S.A[p]]=[S.A[p],S.A[S.sel]];S.sel=null}}
+  else if(a==="toPool"){const sl=slots().length;let q=S.A.findIndex((x,i)=>i>=sl&&!x);if(q>=0){[S.A[S.sel],S.A[q]]=[S.A[q],S.A[S.sel]]}S.sel=null}
+  else if(a==="cancel"){D=null}
+  else if(a==="save")return save();
+  else if(D){const f=D.f;
+    if(a==="sk"){if(D.t==="m"){if(v in f.skills)delete f.skills[v];else f.skills[v]=3}else{f.skills=f.skills.includes(v)?f.skills.filter(s=>s!==v):[...f.skills,v]}}
+    else if(a==="lv"){const i=v.lastIndexOf(":");f.skills[v.slice(0,i)]=+v.slice(i+1)}
+    else if(a==="addSk"){const s=f.newsk.trim();if(s){if(!allSk().includes(s))S.custom.push(s);if(D.t==="m")f.skills[s]=f.skills[s]||3;else if(!f.skills.includes(s))f.skills.push(s);f.newsk=""}}
+  }
+  render();
+});
+document.addEventListener("input",e=>{const k=e.target.dataset.f;if(k&&D)D.f[k]=e.target.value});
+document.addEventListener("change",e=>{
+  const c=e.target.dataset.c;if(!c||!D)return;
+  const [k,id]=c.split(":"),o=k==="like"?"avoid":"like",f=D.f;
+  if(e.target.checked){if(!f[k].includes(id))f[k].push(id);f[o]=f[o].filter(i=>i!==id)}else f[k]=f[k].filter(i=>i!==id);
+  render();
+});
+loadSample();render();
+</script></body></html>
