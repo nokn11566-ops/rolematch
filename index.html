@@ -48,7 +48,7 @@ input[type=text],input[type=number],select{width:100%;padding:9px 11px;border-ra
 </style></head><body>
 <div class="w">
 <div class="card hd" style="margin-bottom:0"><div class="row" style="flex-wrap:nowrap"><div class="logo">👥</div><div><h1>RoleMatch <b>TH</b></h1><div class="sub">ระบบจัดหน้าที่และวิเคราะห์ความเข้ากันได้ในกลุ่ม</div></div></div><button class="btn" data-a="sample">✨ ข้อมูลตัวอย่าง</button></div>
-<div class="tabs" id="tabs"></div>
+<div id="bar"></div><div class="tabs" id="tabs"></div>
 <div id="main"></div>
 </div>
 <div id="dlg"></div><div id="toast"></div>
@@ -72,12 +72,39 @@ const MEM=[
 ["ต้น","plan","early","team",{"หาข้อมูล/วิจัย":5,"วางแผน/บริหาร":3,"จัดการเอกสาร":4},["เจ"],[]],
 ["ฟ้า","cre","late","pair",{"ออกแบบ/กราฟิก":4,"ตัดต่อวิดีโอ":5,"คิดไอเดีย/เขียนบท":4},["บีม"],[]]];
 const uid=()=>Math.random().toString(36).slice(2,8);
-let S={tab:0,members:[],roles:[],custom:[],A:null,sel:null},D=null;
+let S={tab:0,members:[],roles:[],custom:[],A:null,sel:null,key:null,pend:0,snap:""},D=null;
+const SB="https://ucnhpgwylrestoifmwzd.supabase.co",PK="sb_publishable_F5iFX8DhISUV1OAj3qb_Ag__v6TBHIH";
+async function rpc(fn,args){const r=await fetch(SB+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:PK,"Content-Type":"application/json"},body:JSON.stringify(args)});const t=await r.text();if(!r.ok)throw new Error(t);return t?JSON.parse(t):null}
+const ALPH="abcdefghjkmnpqrstuvwxyz23456789";
+const genKey=()=>{const a=new Uint32Array(10);crypto.getRandomValues(a);return Array.from(a,n=>ALPH[n%ALPH.length]).join("")};
+const store=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+const fromStore=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+function applyRoom(d){S.members=d.members||[];S.roles=d.roles||[];S.custom=d.custom||[];S.A=Array.isArray(d.assignment)?d.assignment:null;S.snap=JSON.stringify(d)}
+function setSt(t){const e=$("#st");if(e)e.textContent={ok:"🟢 ซิงก์แล้ว",busy:"🟡 กำลังบันทึก...",err:"🔴 เชื่อมต่อไม่ได้"}[t]}
+async function pull(){
+  if(!S.key||S.pend||D)return;
+  try{const d=await rpc("get_room",{p_key:S.key});if(!d){leave();toast("ไม่พบห้องนี้แล้ว");return}
+    if(JSON.stringify(d)!==S.snap){applyRoom(d);S.sel=null;render()}setSt("ok")}catch(e){setSt("err")}
+}
+async function push(fn,args){S.pend++;setSt("busy");try{await rpc(fn,{p_key:S.key,...args});setSt("ok")}catch(e){setSt("err");toast("บันทึกไม่สำเร็จ ลองใหม่")}finally{S.pend--}}
+const pushRoom=()=>push("save_room",{p_roles:S.roles,p_assignment:S.A,p_custom:S.custom});
+async function enter(k){
+  k=k.trim().toLowerCase();if(!k)return;
+  try{const d=await rpc("get_room",{p_key:k});
+    if(!d){store("rm_key",null);toast("รหัสห้องไม่ถูกต้อง");return}
+    S.key=k;store("rm_key",k);applyRoom(d);S.tab=0;S.sel=null;render()}catch(e){toast("เชื่อมต่อไม่ได้")}
+}
+async function create(){const k=genKey();try{await rpc("create_room",{p_key:k});await enter(k)}catch(e){toast("สร้างห้องไม่สำเร็จ")}}
+function leave(){S.key=null;S.members=[];S.roles=[];S.A=null;store("rm_key",null);history.replaceState(null,"",location.pathname);render()}
+function vLobby(){return `<div class="card"><h2>เริ่มต้นใช้งาน</h2><div class="sub">ทุกกลุ่มมีห้องของตัวเอง เข้าได้เฉพาะคนที่มีรหัสห้อง</div><button class="btn p" style="margin-top:12px;width:100%" data-a="create">＋ สร้างห้องใหม่</button></div><div class="card"><h3>มีรหัสห้องแล้ว?</h3><div class="row" style="flex-wrap:nowrap;margin-top:8px"><input type="text" id="jk" placeholder="พิมพ์รหัสห้อง" autocapitalize="none" autocomplete="off"><button class="btn g" data-a="join">เข้าห้อง</button></div></div>`}
 
-function loadSample(){
-  const ids={};S.members=MEM.map(m=>{const id=uid();ids[m[0]]=id;return{id,name:m[0],style:m[1],time:m[2],mode:m[3],skills:m[4],like:m[5],avoid:m[6]}});
-  S.members.forEach(m=>{m.like=m.like.map(n=>ids[n]);m.avoid=m.avoid.map(n=>ids[n])});
-  applyTpl(0);
+async function loadSample(){
+  if(!S.key){toast("สร้างหรือเข้าห้องก่อน");return}
+  if(!confirm("เพิ่มข้อมูลตัวอย่าง (สมาชิก 7 คน + หน้าที่) ลงในห้องนี้?"))return;
+  const ids={},ms=MEM.map(m=>{const id=uid();ids[m[0]]=id;return{id,name:m[0],style:m[1],time:m[2],mode:m[3],skills:m[4],like:m[5],avoid:m[6]}});
+  ms.forEach(m=>{m.like=m.like.map(n=>ids[n]);m.avoid=m.avoid.map(n=>ids[n])});
+  S.members.push(...ms);applyTpl(0);S.tab=0;render();
+  S.pend++;try{for(const m of ms)await rpc("save_member",{p_key:S.key,p_id:m.id,p_data:m});await rpc("save_room",{p_key:S.key,p_roles:S.roles,p_assignment:null,p_custom:S.custom});toast("เพิ่มข้อมูลตัวอย่างแล้ว")}catch(e){toast("บันทึกไม่สำเร็จ")}finally{S.pend--}
 }
 function applyTpl(i){S.roles=TPL[i][1].map(r=>({id:uid(),name:r[0],count:r[1],style:r[2],skills:r[3].slice()}));S.A=null;S.sel=null}
 const slots=()=>S.roles.flatMap(r=>Array(r.count).fill(r.id));
@@ -143,6 +170,9 @@ function evalA(){
 /* ---------- Render ---------- */
 function chips(list){return list.map(s=>`<span class="chip">${esc(s)}</span>`).join(" ")}
 function render(){
+  if(!S.key){$("#tabs").innerHTML="";$("#bar").innerHTML="";$("#main").innerHTML=vLobby();$("#dlg").innerHTML="";return}
+  $("#bar").innerHTML=`<div class="card row" style="justify-content:space-between;margin:12px 0 0"><div><div class="sub">รหัสห้อง (ให้เฉพาะเพื่อนที่ไว้ใจ)</div><b style="font-size:17px;letter-spacing:1px">${esc(S.key)}</b> <span id="st" class="sub"></span></div><div class="row"><button class="btn" data-a="cpkey">คัดลอกรหัส</button><button class="btn" data-a="cplink">คัดลอกลิงก์เชิญ</button><button class="btn" data-a="leave">ออก</button></div></div>`;
+  setSt(S.pend?"busy":"ok");
   const tb=["สมาชิก ("+S.members.length+")","หน้าที่ ("+S.roles.length+")","ผลลัพธ์ & สลับทีม"];
   $("#tabs").innerHTML=tb.map((t,i)=>`<button class="${S.tab===i?"on":""}" data-a="tab:${i}">${i+1} ${t}</button>`).join("");
   $("#main").innerHTML=[vMem,vRole,vRes][S.tab]();
@@ -195,7 +225,7 @@ function vDlg(){
 
 /* ---------- Actions ---------- */
 function toast(t){const e=$("#toast");e.innerHTML=`<div class="toast">${esc(t)}</div>`;setTimeout(()=>e.innerHTML="",2200)}
-function run(tries){if(!S.members.length||!S.roles.length){toast("เพิ่มสมาชิกและหน้าที่ก่อน");return}S.A=solve(tries);S.sel=null;S.tab=2;render();toast("จับคู่หน้าที่อัตโนมัติเรียบร้อยแล้ว!")}
+function run(tries){if(!S.members.length||!S.roles.length){toast("เพิ่มสมาชิกและหน้าที่ก่อน");return}S.A=solve(tries);pushRoom();S.sel=null;S.tab=2;render();toast("จับคู่หน้าที่อัตโนมัติเรียบร้อยแล้ว!")}
 function summary(){
   const E=evalA();
   return "📋 สรุปการจัดหน้าที่ (เหมาะสมเฉลี่ย "+E.avg+"%)\n"+E.res.map(x=>"• "+x.r.name+": "+(x.items.filter(i=>i.m).map(i=>i.m.name+" ("+i.score+"%)").join(", ")||"ว่าง")).join("\n")+(E.pool.length?"\n• สำรอง: "+E.pool.map(i=>i.m.name).join(", "):"");
@@ -211,30 +241,35 @@ function save(){
   if(!name){D.err="กรุณากรอกชื่อ";render();return}
   if(D.t==="m"){
     const o={name,style:f.style,time:f.time,mode:f.mode,skills:f.skills,like:f.like,avoid:f.avoid};
-    if(D.id)Object.assign(S.members.find(x=>x.id===D.id),o);else S.members.push({id:uid(),...o});
+    let m;if(D.id){m=S.members.find(x=>x.id===D.id);Object.assign(m,o)}else{m={id:uid(),...o};S.members.push(m)}push("save_member",{p_id:m.id,p_data:m});
   }else{
     const o={name,count:Math.max(1,Math.min(20,parseInt(f.count)||1)),style:f.style,skills:f.skills};
     if(D.id)Object.assign(S.roles.find(x=>x.id===D.id),o);else S.roles.push({id:uid(),...o});
   }
-  D=null;S.A=null;S.sel=null;render();
+  D=null;S.A=null;S.sel=null;pushRoom();render();
 }
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-a]");if(!b)return;
   const [a,...r]=b.dataset.a.split(":"),v=r.join(":");
   if(a==="tab"){S.tab=+v}
-  else if(a==="sample"){loadSample();S.tab=0;toast("โหลดข้อมูลตัวอย่างแล้ว")}
+  else if(a==="sample")return loadSample();
   else if(a==="addM")return openM();
   else if(a==="editM")return openM(v);
-  else if(a==="delM"){S.members=S.members.filter(m=>m.id!==v);S.members.forEach(m=>{m.like=m.like.filter(i=>i!==v);m.avoid=m.avoid.filter(i=>i!==v)});S.A=null}
+  else if(a==="delM"){S.members=S.members.filter(m=>m.id!==v);S.members.forEach(m=>{m.like=m.like.filter(i=>i!==v);m.avoid=m.avoid.filter(i=>i!==v)});S.A=null;push("delete_member",{p_id:v})}
   else if(a==="addR")return openR();
   else if(a==="editR")return openR(v);
-  else if(a==="delR"){S.roles=S.roles.filter(x=>x.id!==v);S.A=null}
-  else if(a==="tpl"){applyTpl(+v)}
+  else if(a==="delR"){S.roles=S.roles.filter(x=>x.id!==v);S.A=null;pushRoom()}
+  else if(a==="tpl"){applyTpl(+v);pushRoom()}
   else if(a==="auto")return run(40);
   else if(a==="again")return run(2);
   else if(a==="copy")return copyText(summary());
-  else if(a==="pick"){const p=+v;if(S.sel==null){if(S.A[p])S.sel=p}else if(S.sel===p)S.sel=null;else{[S.A[S.sel],S.A[p]]=[S.A[p],S.A[S.sel]];S.sel=null}}
-  else if(a==="toPool"){const sl=slots().length;let q=S.A.findIndex((x,i)=>i>=sl&&!x);if(q>=0){[S.A[S.sel],S.A[q]]=[S.A[q],S.A[S.sel]]}S.sel=null}
+  else if(a==="pick"){const p=+v;if(S.sel==null){if(S.A[p])S.sel=p}else if(S.sel===p)S.sel=null;else{[S.A[S.sel],S.A[p]]=[S.A[p],S.A[S.sel]];S.sel=null;pushRoom()}}
+  else if(a==="toPool"){const sl=slots().length;let q=S.A.findIndex((x,i)=>i>=sl&&!x);if(q>=0){[S.A[S.sel],S.A[q]]=[S.A[q],S.A[S.sel]];pushRoom()}S.sel=null}
+  else if(a==="create")return create();
+  else if(a==="join")return enter($("#jk").value);
+  else if(a==="leave"){if(confirm("ออกจากห้องนี้? ข้อมูลยังอยู่ในห้อง ใช้รหัสกลับเข้ามาได้"))leave();return}
+  else if(a==="cpkey")return copyText(S.key);
+  else if(a==="cplink")return copyText(location.origin+location.pathname+"#"+S.key);
   else if(a==="cancel"){D=null}
   else if(a==="save")return save();
   else if(D){const f=D.f;
@@ -251,5 +286,7 @@ document.addEventListener("change",e=>{
   if(e.target.checked){if(!f[k].includes(id))f[k].push(id);f[o]=f[o].filter(i=>i!==id)}else f[k]=f[k].filter(i=>i!==id);
   render();
 });
-loadSample();render();
+render();
+const k0=(location.hash.slice(1)||fromStore("rm_key")||"").toLowerCase();if(k0)enter(k0);
+setInterval(()=>{if(!document.hidden)pull()},5000);
 </script></body></html>
